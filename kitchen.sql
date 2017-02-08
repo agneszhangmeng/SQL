@@ -123,3 +123,47 @@ select d.DT as Date, s.externalID, b.unitname1,
 select r.sku, r.ROQ, r.IS_TODAY_ORDER_DAY, r.TIP, r.INVENTORY, r.OPEN_ORDER, r.time 
     from SCM_ROQ_RELEASE r
     where r.unit = 'Kitchen' and r.time >= '20170101' and r.time <= '20170131' 
+    
+   /* week period */ 
+with percentage as (
+    with sales as (
+            select 
+                a.externalId, 
+                to_char(b.orderedAt,'yyyyMMdd') as orderDay,
+                case when orderDay >= 20170101 and orderDay <= 20170107 then 1
+                    when orderDay >= 20170108 and orderDay <= 20170115 then 2
+                    when orderDay >= 20170116 and orderDay <= 20170123 then 3
+                    else 4
+                    end as week,
+                count(b.quantity) as sale_times
+                from skus a 
+                    left join (
+                        select
+                            o1.orderedAt,
+                            o2.skuId, 
+                            o2.quantity
+                        from orders o1 
+                            join order_items o2 on o1.id = o2.orderid
+                        where o1.orderedAt>='20170101' and o1.status<>'CLOSED'
+                    ) b on a.id = b.skuId
+                    join deal_sku c on a.externalId = c.dealskuseq 
+                    join MANAGEMENT_CATEGORY_HIER_CURR d on c.managecategoryseq = d.mngcateid
+                    where d.unitname1 = 'Kitchen'  
+                group by a.externalId,orderDay
+        ) 
+    select 
+        a.dt,
+        s.week,
+        a.externalId,
+        s.sale_times
+    from 
+        ( select distinct d.dt, e.externalId
+            from sales e 
+            join dim_date d on 1=1
+            where d.dt >=20170101 and d.dt<=20170131
+        ) a 
+        left join sales s on a.dt = s.orderDay and a.externalId = s.externalId
+    order by a.externalId, a.dt 
+) select p.externalId, p.week, count(p.sale_times) as weektimes 
+    from percentage p
+    group by 1,2
