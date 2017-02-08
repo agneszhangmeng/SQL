@@ -80,39 +80,3 @@ select d.DT as Date, s.externalID, b.unitname1,
             on a.managecategoryseq = b.mngcateid
         group by 1,2,3
         having Date >= '20170205' and b.unitname1 = 'Kitchen'
-        
-
-with all_day_sales as (
-    with sales as (
-        select 
-            a.externalId, 
-            to_char(b.orderedAt,'yyyyMMdd') as orderDay, 
-            count(b.quantity) as sale_times
-            from skus a left join (
-                    select
-                        o1.orderedAt,
-                        o2.skuId, 
-                        o2.quantity
-                    from orders o1 
-                        join order_items o2 on o1.id = o2.orderid
-                    where o1.orderedAt>='20170101' and o1.status<>'CLOSED'
-                ) b on a.id = b.skuId
-                join deal_sku c on a.externalId = c.dealskuseq 
-                join MANAGEMENT_CATEGORY_HIER_CURR d on c.managecategoryseq = d.mngcateid
-                where d.unitname1 = 'Kitchen'
-            group by a.externalId,orderDay
-    ) select d.dt,
-        e.externalId,
-        e.orderDay,
-        e.sale_times
-        from dim_date d 
-            join sales e on 1=1
-            where d.dt>=20170101 and d.dt<=20170131
-) select 
-        f.dt as orderDay,
-        f.externalId,
-        f.sale_times
-    from all_day_sales f
-    where (f.orderDay is null or (f.orderDay is not null and f.dt = f.orderDay))
-    order by f.externalId, orderDay
-    
