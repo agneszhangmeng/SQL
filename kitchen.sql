@@ -119,6 +119,8 @@ select d.DT as Date, s.externalID, b.unitname1,
 ) select p.externalId, count(p.sale_times)/cast(31 as decimal) as percent
     from percentage p
     group by 1
+    
+    
 /*select ROQ */ 
 select r.sku, r.ROQ, r.IS_TODAY_ORDER_DAY, r.TIP, r.INVENTORY, r.OPEN_ORDER, r.time 
     from SCM_ROQ_RELEASE r
