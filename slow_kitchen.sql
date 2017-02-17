@@ -35,4 +35,20 @@
     
     
   #find actual sales data 
-  
+  select 
+    a.externalId, 
+    sum(b.quantity) as actualsales
+    from skus a 
+        left join (
+            select
+                o1.orderedAt,
+                o2.skuId, 
+                o2.quantity
+            from orders o1 
+                join order_items o2 on o1.id = o2.orderid
+            where o1.orderedAt>='20170202' and o1.orderedAt <= '20170208' and o1.status<>'CLOSED'
+        ) b on a.id = b.skuId
+        join deal_sku c on a.externalId = c.dealskuseq 
+        join MANAGEMENT_CATEGORY_HIER_CURR d on c.managecategoryseq = d.mngcateid
+        where d.unitname1 = 'Kitchen'  
+    group by a.externalId
