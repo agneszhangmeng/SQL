@@ -46,9 +46,10 @@
                 o2.quantity
             from orders o1 
                 join order_items o2 on o1.id = o2.orderid
-            where o1.orderedAt>='20170202' and o1.orderedAt <= '20170208' and o1.status<>'CLOSED'
+            where o1.orderedAt>='20170120' and o1.orderedAt <= '20170216' and o1.status<>'CLOSED'
         ) b on a.id = b.skuId
         join deal_sku c on a.externalId = c.dealskuseq 
         join MANAGEMENT_CATEGORY_HIER_CURR d on c.managecategoryseq = d.mngcateid
-        where d.unitname1 = 'Kitchen'  
+        join DLF_DEMAND_FORECASTING_ITEM_PV_ROLLING p on p.skuseq = a.externalId 
+        where d.unitname1 = 'Kitchen'  and c.skutype = 'NORMAL' and c.salestatus = 'ACTIVE' 
     group by a.externalId
