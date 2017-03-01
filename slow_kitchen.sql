@@ -16,7 +16,9 @@
                     ) b on a.id = b.skuId
                     join deal_sku c on a.externalId = c.dealskuseq 
                     join MANAGEMENT_CATEGORY_HIER_CURR d on c.managecategoryseq = d.mngcateid
-                    where d.unitname1 = 'Kitchen'  
+                    join DLF_DEMAND_FORECASTING_ITEM_PV_ROLLING p on p.skuseq = a.externalId 
+                    where d.unitname1 = 'Kitchen'  and c.skutype = 'NORMAL' 
+                           and c.salestatus = 'ACTIVE'and    p.basis_dy='20170216'        
                 group by a.externalId,orderDay
         ) 
     select 
