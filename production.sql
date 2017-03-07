@@ -69,3 +69,6 @@ with united_sku_info as (
         left join inv_info ii   on ssi.unitedskuseq = ii.skuseq and ssi.area = ii.area       
         left join lost_revenue lr on ssi.unitedskuseq = lr.skuseq   
         where     $CONDITIONS
+        #
+select * from dwd_sku where salestatus = 'ACTIVE' and skutype='NORMAL' and live_yn=1 
+        and FST_INBOUND_DY       and isnotnull(FST_SALES_DY)
