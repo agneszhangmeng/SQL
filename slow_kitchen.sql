@@ -102,3 +102,21 @@
                 join MANAGEMENT_CATEGORY_HIER_CURR m on 1=1
             ) r
             left join temp t on t.externalId = r.externalId
+            
+            
+            
+            
+            
+            
+  with temp as (
+    select s.externalid, sum(oi.quantity) as dailysales
+    from skus s 
+    left join order_items oi on oi.SKUID = s.id
+    left join orders o on o.id = oi.orderid where to_char(o.orderedAt,'yyyymmdd') = '20170312'
+    group by s.externalid
+    ) 
+    select sku, UNIT1, t.dailysales, D1,D2,D3,D4,D5,D6,D7
+    from SCM_DAILY_FORECAST F
+    join SCM_FORECAST_MODEL M on F.MODEL_ID = M.ID
+    left join temp t on t.externalid = F.sku 
+    where F.RUNDT = '20170312' and AREA = 'national' and MODEL_ID = 30
