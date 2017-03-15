@@ -12,7 +12,7 @@
                             o2.quantity
                         from orders o1 
                             join order_items o2 on o1.id = o2.orderid
-                        where o1.orderedAt>='20170101' and o1.status<>'CLOSED'
+                        where o1.orderedAt>='20170101' and o1.status<>'CANCELED'
                     ) b on a.id = b.skuId
                     join deal_sku c on a.externalId = c.dealskuseq 
                     join MANAGEMENT_CATEGORY_HIER_CURR d on c.managecategoryseq = d.mngcateid
@@ -48,7 +48,7 @@
                 o2.quantity
             from orders o1 
                 join order_items o2 on o1.id = o2.orderid
-            where o1.orderedAt>='20170120' and o1.orderedAt <= '20170216' and o1.status<>'CLOSED'
+            where o1.orderedAt>='20170120' and o1.orderedAt <= '20170216' and o1.status<>'CANCELED'
         ) b on a.id = b.skuId
         join deal_sku c on a.externalId = c.dealskuseq 
         join MANAGEMENT_CATEGORY_HIER_CURR d on c.managecategoryseq = d.mngcateid
@@ -74,7 +74,7 @@
                             o2.quantity
                         from orders o1 
                             join order_items o2 on o1.id = o2.orderid
-                        where  o1.orderedAt>='20160701' and o1.orderedAt <= '20170131' and o1.status<>'CLOSED'
+                        where  o1.orderedAt>='20160701' and o1.orderedAt <= '20170131' and o1.status<>'CANCELED'
                     ) b on a.id = b.skuId
                     left join deal_sku c on a.externalId = c.dealskuseq 
                     left join MANAGEMENT_CATEGORY_HIER_CURR d on c.managecategoryseq = d.mngcateid
@@ -112,11 +112,12 @@
     select s.externalid, sum(oi.quantity) as dailysales
     from skus s 
     left join order_items oi on oi.SKUID = s.id
-    left join orders o on o.id = oi.orderid where to_char(o.orderedAt,'yyyymmdd') = '20170312'
+    left join orders o on o.id = oi.orderid 
+    where to_char(o.orderedAt,'yyyymmdd') = '20170312' and o.status <> 'CANCELED'
     group by s.externalid
     ) 
     select sku, UNIT1, t.dailysales, D1,D2,D3,D4,D5,D6,D7
     from SCM_DAILY_FORECAST F
     join SCM_FORECAST_MODEL M on F.MODEL_ID = M.ID
     left join temp t on t.externalid = F.sku 
-    where F.RUNDT = '20170312' and AREA = 'national' and MODEL_ID = 30
+    where F.RUNDT = '20170312' and AREA = 'national' and MODEL_ID = 30 
