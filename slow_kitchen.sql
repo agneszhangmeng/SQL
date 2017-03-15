@@ -121,3 +121,24 @@
     join SCM_FORECAST_MODEL M on F.MODEL_ID = M.ID
     left join temp t on t.externalid = F.sku 
     where F.RUNDT = '20170312' and AREA = 'national' and MODEL_ID = 30 
+    
+    --select actual sales with forecast 
+select s.externalid, to_char(a.orderedAt,'yyyymmdd') day, sum(a.quantity) as dailysales
+    from skus s
+        left join (
+            select
+                    o1.orderedAt,
+                    o2.skuId, 
+                    o2.quantity
+                from orders o1 
+                    join order_items o2 on o1.id = o2.orderid
+                where  o1.orderedAt >= '20170301' and o1.orderedAt < '20170315' and o1.status<>'CANCELED' and o1.status <> 'CLOSED'
+            ) a on a.skuId = s.id
+        left join SCM_DAILY_FORECAST f on f.sku = s.externalid and to_char(a.orderedat,'yyyymmdd')=f.RUNDT
+    where f.AREA = 'national' and f.sku = '23959' 
+    group by 1,2 
+
+--oos 
+select p.skuseq, p.SOLDOUT_HOUR
+    from DLF_DEMAND_FORECASTING_ITEM_PV_ROLLING p 
+    where p.basis_dy = '20170315' and p.skuseq = '23959'
