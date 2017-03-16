@@ -47,7 +47,7 @@ with united_sku_info as (
             left join ZIP_AREA_MAPPING zam  on o.RECIPIENTZIP = zam.ZIPCODE         
             join skus s on s.id = oi.skuid         
             join center_area_mapping cam on o.centerid = cam.centerid     
-            where  o.status <> 'CLOSED'and date_trunc('day',o.orderedat) = to_date('${target_date}', 'yyyymmdd')   
+            where  o.status <> 'CANCELED'and date_trunc('day',o.orderedat) = to_date('${target_date}', 'yyyymmdd')   
             group by 1,2,3 ),
             inv_info as (   
             select dsd.skuseq skuseq,cam.area area,sum(dsd.USE_CNT) inventory 
@@ -74,7 +74,7 @@ select * from dwd_sku where salestatus = 'ACTIVE' and skutype='NORMAL' and live_
         and FST_INBOUND_DY       and isnotnull(FST_SALES_DY)
 
 
-        #Tip used 
+#Get the tip used sku list 
 with united_sku_info as (     
     select     
         aa.unitedskuseq,
@@ -111,7 +111,7 @@ with united_sku_info as (
             left join ZIP_AREA_MAPPING zam  on o.RECIPIENTZIP = zam.ZIPCODE         
             join skus s on s.id = oi.skuid         
             join center_area_mapping cam on o.centerid = cam.centerid     
-            where  o.status <> 'CLOSED'and date_trunc('day',o.orderedat) < to_date('20170307', 'yyyymmdd') and date_trunc('day',o.orderedat) > to_date('20170101','yyyymmdd')  
+            where  o.status <> 'CANCELED'and date_trunc('day',o.orderedat) < to_date('20170307', 'yyyymmdd') and date_trunc('day',o.orderedat) > to_date('20170101','yyyymmdd')  
             group by 1,2,3)
 , unit as (SELECT a.DEALSKUSEQ skuseq 
     ,a.SALESTATUS 
