@@ -138,3 +138,12 @@ select  '20170308' dt,
             on ssi.unitedskuseq = oi.skuseq and ssi.area = oi.area       
        left join unit on unit.skuseq=ssi.unitedskuseq
         group by dt,oi.day,unit.unit,unit.cate,ssi.unitedskuseq,ssi.status
+
+
+
+select cast(SKUSEQ as varchar(30)) skuseq,          
+        cast(date(START_DT) as varchar(30)) stardt,          
+        cast(date(END_DT) as varchar(30)) enddt  
+from DWD_SKU_EDIT_HIST 
+where EDITFIELD = 'SkuType' and value in ('PROMOTION', 'OUTLET', 'outlet', 'OUTLETx') 
+    and enddt >= now() - 130 and $CONDITIONS"
