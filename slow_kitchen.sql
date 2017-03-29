@@ -142,3 +142,13 @@ select s.externalid, to_char(a.orderedAt,'yyyymmdd') day, sum(a.quantity) as dai
 select p.skuseq, p.SOLDOUT_HOUR
     from DLF_DEMAND_FORECASTING_ITEM_PV_ROLLING p 
     where p.basis_dy = '20170315' and p.skuseq = '23959'
+    
+    
+    
+    
+    select cast(SKUSEQ as varchar(30)) skuseq,          
+        cast(date(START_DT) as varchar(30)) stardt,          
+        cast(date(END_DT) as varchar(30)) enddt  
+from DWD_SKU_EDIT_HIST 
+where EDITFIELD = 'SkuType' and value in ('PROMOTION', 'OUTLET', 'outlet', 'OUTLETx') 
+    and enddt >= now() - 130 and $CONDITIONS"
