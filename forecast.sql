@@ -169,8 +169,8 @@ WHERE aa.rk = 1
 /* Sales Frequency */ 
 with orders_info as (
     select
-        a.dealskuseq, a.managecategoryseq,
-        d.MM month,
+        a.dealskuseq, 
+        a.managecategoryseq,
         oi.quantity actualSales
       from
         DEAL_SKU a
@@ -179,16 +179,17 @@ with orders_info as (
           left join ORDERS o on oi.orderid = o.id
           left join DIM_DATE d on to_char(o.orderedat, 'yyyymmdd') = d.DT
       where
-        a.unitedsku='Y' and o.STATUS <> ‘CLOSED'
-        and d.DT >= 20161001 and d.DT <= 20161231),
-    unit as (select m.unitname1, mngcateid from MANAGEMENT_CATEGORY_HIER_CURR m )
-select dealskuseq, month, unitname1,
-       count(actualSales) salesFreq,
-       sum(actualSales) sales
-from orders_info
-    left join unit
-    on orders_info.managecategoryseq = unit.mngcateid
-group by 1, 2, 3
+        a.unitedsku ='Y' and o.STATUS <> 'CLOSED'
+        and d.DT >= '20170402' and d.DT <= '20170408'),
+    unit as (select unitname1, mngcateid from MANAGEMENT_CATEGORY_HIER_CURR m)
+select o.dealskuseq,
+        u.unitname1,
+       count(o.actualSales) salesFreq,
+       sum(o.actualSales) sales
+from orders_info o
+    left join unit u
+    on o.managecategoryseq = u.mngcateid
+group by 1,2
 
 
 
