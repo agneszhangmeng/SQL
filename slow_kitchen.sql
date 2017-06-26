@@ -152,3 +152,47 @@ select p.skuseq, p.SOLDOUT_HOUR
 from DWD_SKU_EDIT_HIST 
 where EDITFIELD = 'SkuType' and value in ('PROMOTION', 'OUTLET', 'outlet', 'OUTLETx') 
     and enddt >= now() - 130 and $CONDITIONS"
+    
+    
+    
+    
+    
+    
+    
+    
+        with sales as (
+            select 
+                a.externalId, 
+                to_char(b.orderedAt,'yyyyMMdd') as orderDay, 
+                d.UNITNAME1,
+                d.UNITNAME2,
+                sum(b.quantity) as sales
+                from skus a 
+                    left join (
+                        select
+                            o1.orderedAt,
+                            o2.skuId, 
+                            o2.quantity
+                        from orders o1 
+                            join order_items o2 on o1.id = o2.orderid
+                        where o1.orderedAt >= '20160214' and o1.orderedAt >= '20161008' and o1.status<>'CANCELED'
+                    ) b on a.id = b.skuId
+                    join deal_sku c on a.externalId = c.dealskuseq 
+                    join MANAGEMENT_CATEGORY_HIER_CURR d on c.managecategoryseq = d.mngcateid
+                    
+                group by 1,2,3,4
+        ) 
+    select 
+        a.dt,
+        a.externalId,
+        s.UNITNAME1, 
+        s.UNITNAME2,
+        s.sales
+    from 
+        ( select distinct d.dt, e.externalId
+            from sales e 
+            join dim_date d on 1=1
+            where d.dt >= 20160214 and d.dt <= 20161008
+        ) a 
+        left join sales s on a.dt = s.orderDay and a.externalId = s.externalId
+    order by a.externalId,a.dt 
