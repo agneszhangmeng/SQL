@@ -1,3 +1,16 @@
+--oos 
+select basis_dy,skuseq,unitname1,unitname2,salestatus, skutype,soldout_hour
+from bimart.DLF_DEMAND_FORECASTING_ITEM_PV_ROLLING 
+where skuseq = 3063220 
+order by basis_dy desc
+
+
+
+
+
+
+
+
 --actual sales 
 
 SELECT 
